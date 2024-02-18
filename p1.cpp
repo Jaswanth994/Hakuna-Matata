@@ -14,30 +14,27 @@ class core{
     public:
             int registers[32];
             int pc;
-            stack <string> s;
             core(){
                 for(int i=0;i<32;i++){
                     registers[i]=0;
                 }
                 pc=0;
-                stack <string> s;
             }
 };
 
-class processor : core{
+class processor {
     
     public:
-            int memory[4096];
+            string memory[4096];
             int clock;
             processor(){
                 for(int i=0;i<4096;i++){
-                    memory[i]=0;
+                    memory[i]="";
                 }
                 clock=0;
             } 
             core c[2];
-            //void run();
-            void execute(string s,int i);
+            void execute(string s[]);
             void print();
 };
 void processor::print(){
@@ -53,9 +50,17 @@ void processor::print(){
     cout<<"]"<<endl;
     
 }
-void processor::execute(string s,int i){
+void processor::execute(string s[]){
+    int n = s->size();
+    int j=0;
+    while(n-->0){
+    int i=0;
+    if(j%2==0){
+        i=0;
+    }
+    else i=1;
     string t;
-    stringstream s1(s);
+    stringstream s1(s[j]);
     queue <string> s2;
      while (getline(s1, t,' '))
    {
@@ -76,7 +81,6 @@ void processor::execute(string s,int i){
         s2.pop();
         int rd = int(s2.front()[1]-'0');
         s2.pop();
-       // cout<<s2.front();
        if(!isdigit(s2.front()[0])){
         int r1 = int(s2.front()[1]-'0');
         s2.pop();
@@ -88,10 +92,11 @@ void processor::execute(string s,int i){
             int r1 = int(s2.front()[3]-'0')+x;
             s2.pop();
             c[i].registers[r1]=7;
-            
             c[i].registers[rd]= c[i].registers[r1];
         }
     }
+    j++;
+   }
 }
 
 int main(){
@@ -99,10 +104,13 @@ int main(){
     queue <string> s1;
     s1.push("ADD X1 X2 X3");
     s1.push("LW X4 5(X0)");
-    p.c[0].s.push(s1.front());
-    s1.pop();
-    p.c[1].s.push(s1.front());
-    p.execute(p.c[0].s.top(),0);
-     p.execute(p.c[1].s.top(),1);
-     p.print();
+    s1.push("ADD X7 X8 X6");
+    int i=0;
+    while(!s1.empty()){
+        p.memory[i]=s1.front();
+        s1.pop();
+        i++;
+    }
+   p.execute(p.memory);
+    p.print();
 }
