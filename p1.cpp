@@ -79,63 +79,34 @@ void processor::execute(string s[])
             s2.push(t);
         }
         int rd, r1, r2;
-        if (s2.front() == "ADD")
+        if (s2.front() == "add")
         {
+              s2.pop();
+            int rd = stoi(s2.front().substr(1));
             s2.pop();
-
-            if (!isdigit(s2.front()[2]))
-            {
-                rd = int(s2.front()[1] - '0');
-            }
-            else
-                rd = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
+            int r1 = stoi(s2.front().substr(1));
             s2.pop();
-            if (!isdigit(s2.front()[2]))
-            {
-                r1 = int(s2.front()[1] - '0');
-            }
-            else
-                r1 = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
-            s2.pop();
-            if (!isdigit(s2.front()[2]))
-            {
-                r2 = int(s2.front()[1] - '0');
-            }
-            else
-                r2 = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
+            int r2 = stoi(s2.front().substr(1));
             c[i].registers[r1] = 7;
             c[i].registers[r2] = 8;
             c[i].registers[rd] = c[i].registers[r1] + c[i].registers[r2];
+
         }
-        if (s2.front() == "SUB")
+        if (s2.front() == "sub")
         {
+              s2.pop();
+            int rd = stoi(s2.front().substr(1));
             s2.pop();
-            if (!isdigit(s2.front()[2]))
-            {
-                rd = int(s2.front()[1] - '0');
-            }
-            else
-                rd = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
+            int r1 = stoi(s2.front().substr(1));
             s2.pop();
-            if (!isdigit(s2.front()[2]))
-            {
-                r1 = int(s2.front()[1] - '0');
-            }
-            else
-                r1 = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
-            s2.pop();
-            if (!isdigit(s2.front()[2]))
-            {
-                r2 = int(s2.front()[1] - '0');
-            }
-            else
-                r2 = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
-            c[i].registers[r1] = 7;
-            c[i].registers[r2] = 8;
+            int r2 = stoi(s2.front().substr(1));
+            c[i].registers[r1] = 26;
+            c[i].registers[r2] = 9;
             c[i].registers[rd] = c[i].registers[r1] - c[i].registers[r2];
+
         }
         if (s2.front() == "LW")
-        {
+        {   int y;
             s2.pop();
             if (!isdigit(s2.front()[2]))
             {
@@ -155,39 +126,69 @@ void processor::execute(string s[])
                     r1 = int((s2.front()[1] - '0') * 10 + (s2.front()[2] - '0'));
                 }
                 s2.pop();
-                c[i].registers[r1] = 7;
-                c[i].registers[rd] = c[i].registers[r1];
+                c[i].registers[r1] =1000;
+                memory[c[i].registers[r1]]="72";
+                y = stoi(memory[c[i].registers[r1]]);
+                c[i].registers[rd] = y;
             }
             else if (isdigit(s2.front()[0]))
-            {
+            {   int z=0;
                 int x = 0,r1;
                 if (isdigit(s2.front()[1]))
                 {
                     x = int((s2.front()[0] - '0') * 10 + (s2.front()[1] - '0'));
+                    z=4;
                 }
                 else
                 {
                     x = int(s2.front()[0] - '0');
+                    z=3;
                 }
-                if(isdigit(s2.front()[5])){
-                    r1 = int((s2.front()[4]-'0')*10 + (s2.front()[5]-'0')+x); 
+                if(isdigit(s2.front()[z+1])){
+                    r1 = int((s2.front()[z]-'0')*10 + (s2.front()[z]-'0')+x); 
                 }
-                else  r1 = int((s2.front()[4]-'0')+x);
-                 c[i].registers[r1] = 7;
-                c[i].registers[rd] = c[i].registers[r1];
+                else  r1 = int((s2.front()[z]-'0')+x);
+                //cout<<r1;
+                c[i].registers[r1] =1000;
+                memory[c[i].registers[r1]]="72";
+                y = stoi(memory[c[i].registers[r1]]);
+                c[i].registers[rd] = y;
             }
+        }
+        if(s2.front()=="addi"){
+             s2.pop();
+            int rd = stoi(s2.front().substr(1));
+            s2.pop();
+            int r1 = stoi(s2.front().substr(1));
+            s2.pop();
+            int value = stoi(s2.front().substr(0));
+            c[i].registers[r1] = 6;
+            c[i].registers[rd] = c[i].registers[r1] + value;
+        }
 
+
+        if(s2.front()=="bne"){
+            s2.pop();
+            int rd = stoi(s2.front().substr(1));
+            s2.pop();
+            int r1 = stoi(s2.front().substr(1));
+            s2.pop();
+            if(rd!=r1){
+
+            }
         }
         j++;
     }
 }
+
 int main()
 {
     processor p;
     queue<string> s1;
-     s1.push("ADD X12 X2 X3");
-    s1.push("LW X4 X7"); // lw x1 x3
-     s1.push("SUB X17 X18 X16");
+    s1.push("add X1 X2 X3");
+    s1.push("lw X4 X2"); // lw x1 x3
+    s1.push("sub X15 X17 X16");
+    s1.push("addi X9 x10 111");
     int i = 0;
     while (!s1.empty())
     {
