@@ -105,7 +105,7 @@ void processor::execute(string s[])
             c[i].registers[rd] = c[i].registers[r1] - c[i].registers[r2];
 
         }
-        if (s2.front() == "LW")
+        if (s2.front() == "lw")
         {   int y;
             s2.pop();
             if (!isdigit(s2.front()[2]))
@@ -148,7 +148,6 @@ void processor::execute(string s[])
                     r1 = int((s2.front()[z]-'0')*10 + (s2.front()[z]-'0')+x); 
                 }
                 else  r1 = int((s2.front()[z]-'0')+x);
-                //cout<<r1;
                 c[i].registers[r1] =1000;
                 memory[c[i].registers[r1]]="72";
                 y = stoi(memory[c[i].registers[r1]]);
@@ -186,7 +185,7 @@ int main()
     processor p;
     queue<string> s1;
     s1.push("add X1 X2 X3");
-    s1.push("lw X4 X2"); // lw x1 x3
+    s1.push("lw X4 X2");
     s1.push("sub X15 X17 X16");
     s1.push("addi X9 x10 111");
     int i = 0;
