@@ -11,10 +11,10 @@
 using namespace std;
 class core
 {
-
 public:
     int registers[32];
     int pc;
+    void execute(string s[]);
     core()
     {
         for (int i = 0; i < 32; i++)
@@ -27,7 +27,6 @@ public:
 
 class processor
 {
-
 public:
     string memory[4096];
     int clock;
@@ -40,26 +39,24 @@ public:
         clock = 0;
     }
     core c[2];
-    void execute(string s[]);
-    void print();
 };
-void processor::print()
-{
+void print(processor p)
+{  
     cout << "[ ";
     for (int i = 0; i < 32; i++)
     {
-        cout << c[0].registers[i] << " ";
+        cout << p.c[0].registers[i]<<" ";
     }
     cout << "]" << endl;
     cout << "[ ";
     for (int i = 0; i < 32; i++)
     {
-        cout << c[1].registers[i] << " ";
+        cout << p.c[1].registers[i] << " ";
     }
     cout << "]" << endl;
 }
-void processor::execute(string s[])
-{
+void core::execute(string s[])
+{   processor p;
     int n = s->size();
     int j = 0;
     while (n-- > 0)
@@ -87,10 +84,9 @@ void processor::execute(string s[])
             int r1 = stoi(s2.front().substr(1));
             s2.pop();
             int r2 = stoi(s2.front().substr(1));
-            c[i].registers[r1] = 7;
-            c[i].registers[r2] = 8;
-            c[i].registers[rd] = c[i].registers[r1] + c[i].registers[r2];
-
+            p.c[i].registers[r1] = 7;
+            p.c[i].registers[r2] = 8;
+            p.c[i].registers[rd] = p.c[i].registers[r1] + p.c[i].registers[r2];
         }
         if (s2.front() == "sub")
         {
@@ -100,9 +96,9 @@ void processor::execute(string s[])
             int r1 = stoi(s2.front().substr(1));
             s2.pop();
             int r2 = stoi(s2.front().substr(1));
-            c[i].registers[r1] = 26;
-            c[i].registers[r2] = 9;
-            c[i].registers[rd] = c[i].registers[r1] - c[i].registers[r2];
+            p.c[i].registers[r1] = 26;
+            p.c[i].registers[r2] = 9;
+            p.c[i].registers[rd] = p.c[i].registers[r1] - p.c[i].registers[r2];
 
         }
         if (s2.front() == "lw")
@@ -126,10 +122,10 @@ void processor::execute(string s[])
                     r1 = int((s2.front()[1] - '0') * 10 + (s2.front()[2] - '0'));
                 }
                 s2.pop();
-                c[i].registers[r1] =1000;
-                memory[c[i].registers[r1]]="72";
-                y = stoi(memory[c[i].registers[r1]]);
-                c[i].registers[rd] = y;
+                p.c[i].registers[r1] =1000;
+                p.memory[p.c[i].registers[r1]]="72";
+                y = stoi(p.memory[p.c[i].registers[r1]]);
+                p.c[i].registers[rd] = y;
             }
             else if (isdigit(s2.front()[0]))
             {   int z=0;
@@ -148,10 +144,10 @@ void processor::execute(string s[])
                     r1 = int((s2.front()[z]-'0')*10 + (s2.front()[z]-'0')+x); 
                 }
                 else  r1 = int((s2.front()[z]-'0')+x);
-                c[i].registers[r1] =1000;
-                memory[c[i].registers[r1]]="72";
-                y = stoi(memory[c[i].registers[r1]]);
-                c[i].registers[rd] = y;
+                p.c[i].registers[r1] =1000;
+                p.memory[p.c[i].registers[r1]]="72";
+                y = stoi(p.memory[p.c[i].registers[r1]]);
+                p.c[i].registers[rd] = y;
             }
         }
         if(s2.front()=="addi"){
@@ -161,8 +157,9 @@ void processor::execute(string s[])
             int r1 = stoi(s2.front().substr(1));
             s2.pop();
             int value = stoi(s2.front().substr(0));
-            c[i].registers[r1] = 6;
-            c[i].registers[rd] = c[i].registers[r1] + value;
+            p.c[i].registers[r1] = 6;
+            p.c[i].registers[rd] = p.c[i].registers[r1] + value;
+            //cout<< p.c[i].registers[rd]<<endl;
         }
 
 
@@ -178,11 +175,13 @@ void processor::execute(string s[])
         }
         j++;
     }
+    print(p);
 }
 
 int main()
 {
     processor p;
+    core c;
     queue<string> s1;
     s1.push("add X1 X2 X3");
     s1.push("lw X4 X2");
@@ -195,6 +194,5 @@ int main()
         s1.pop();
         i++;
     }
-    p.execute(p.memory);
-    p.print();
+    c.execute(p.memory);
 }
