@@ -1,0 +1,32 @@
+.data
+arr: .word 7 2 6 9 8 5 1 15 10 11 16 14 13 12 19 17 18 20 3 4
+.text
+start:
+addii x1 x0 0
+addi x2 x0 0
+addi x3 x0 18
+la x9 arr
+la x10 arr
+li x4 19
+li x7 20
+la x11 arr
+la x14 arr
+loop:
+addi x2 x1 1
+addi x9 x14 0
+addi x15 x14 1
+loop1:
+beq x7 x2 exit
+lw x5 0(x9)
+lw x6 0(x15)
+blt x5 x6 exit2
+sw x5 0(x15)
+sw x6 0(x9)
+exit2: 
+addi x15 x15 1
+addi x2 x2 1
+j loop1
+exit:
+addi x1 x1 1
+addi x14 x14 1
+bne x1 x4 loop
