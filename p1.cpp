@@ -14,8 +14,9 @@ class core
 public:
     int registers[32];
     int pc;
-    void execute(string memory);
-
+    void execute(string instruction, string memory[]);
+    void labels(int start_addr, string memory[]);
+    map<string, int> label_addr;
     core()
     {
         for (int i = 0; i < 32; i++)
@@ -39,233 +40,276 @@ public:
         clock = 0;
     }
     core cores[2] = {core(), core()};
-    
-    void run(string memory[]);
-    void load_Program(string filename, int start_addr);
-    void print();
-};
-void print1(processor p)
-{
-    cout << "[ ";
-    for (int i = 0; i < 32; i++)
-    {
-        cout << p.cores[0].registers[i] << " ";
-    }
-    cout << "]" << endl;
-}
-void print2(processor p)
-{
-    cout << "[ ";
-    for (int i = 0; i < 32; i++)
-    {
-        cout << p.cores[1].registers[i] << " ";
-    }
-   cout << "]" << endl;
-}
 
-void core::execute(string memory)
-{   
-    int i;
-    processor p;
-    int j=0;
-        string t;
-        stringstream s1(memory);
-        queue<string> s2;
-        while (getline(s1, t, ' '))
+    void run();
+    void load_Program(string filename, int start_addr);
+};
+
+void core::execute(string instruction, string memory[])
+{
+    string word;
+    stringstream s1(instruction);
+    queue<string> s2;
+    while (s1 >> word)
+    {
+        s2.push(word);
+    }
+    int rd, r1, r2;
+    std::cout << s2.front() << " /////////" << endl;
+    if (s2.front() == "add")
+    {
+        s2.pop();
+        int rd = stoi(s2.front().substr(1));
+        s2.pop();
+        int r1 = stoi(s2.front().substr(1));
+        s2.pop();
+        int r2 = stoi(s2.front().substr(1));
+        registers[rd] = registers[r1] + registers[r2];
+        pc++;
+    }
+    else if (s2.front() == "sub")
+    {
+        s2.pop();
+        int rd = stoi(s2.front().substr(1));
+        s2.pop();
+        int r1 = stoi(s2.front().substr(1));
+        s2.pop();
+        int r2 = stoi(s2.front().substr(1));
+        registers[rd] = registers[r1] - registers[r2];
+        pc++;
+    }
+
+    else if (s2.front() == "addi")
+    {
+        s2.pop();
+        int rd = stoi(s2.front().substr(1));
+        s2.pop();
+        int r1 = stoi(s2.front().substr(1));
+        s2.pop();
+        int value = stoi(s2.front().substr(0));
+        registers[rd] = registers[r1] + value;
+        pc++;
+    }
+    
+    else if (s2.front() == "bne")
+    {
+        s2.pop();
+        int rd = stoi(s2.front().substr(1));
+        s2.pop();
+        int r1 = stoi(s2.front().substr(1));
+        s2.pop();
+        if (registers[rd] != registers[r1])
         {
-            s2.push(t);
+            string label = s2.front();
+            pc = label_addr[label];
+            return;
         }
-        int rd, r1, r2;
-        if(j<2048){
-            i=0;
-        }
-        else i=1;
-        if (s2.front() == "add")
-        {
-            s2.pop();
-            int rd = stoi(s2.front().substr(1));
-            s2.pop();
-            int r1 = stoi(s2.front().substr(1));
-            s2.pop();
-            int r2 = stoi(s2.front().substr(1));
-            registers[r1] = 7;
-            registers[r2] = 8;
-            registers[rd] = registers[r1] + registers[r2];
-            p.cores[i].pc++;
-        }
-        if (s2.front() == "sub")
-        {
-            s2.pop();
-            int rd = stoi(s2.front().substr(1));
-            s2.pop();
-            int r1 = stoi(s2.front().substr(1));
-            s2.pop();
-            int r2 = stoi(s2.front().substr(1));
-            registers[r1] = 26;
-            registers[r2] = 9;
-            registers[rd] = registers[r1] - registers[r2];
-            pc++;
-        }
-        if (s2.front() == "lw")
-        {
+        pc++;
+    }
+    else if (s2.front() == "lw")
+    {           
             int y;
             s2.pop();
-            /*if (!isdigit(s2.front()[2]))
+            if (!isdigit(s2.front()[2]))
             {
                 rd = int(s2.front()[1] - '0');
             }
             else
                 rd = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
             s2.pop();
-            if (!isdigit(s2.front()[0]))
-            {
-                if (!isdigit(s2.front()[2]))
-                {
-                    r1 = int(s2.front()[1] - '0');
-                }
-                else
-                {
-                    r1 = int((s2.front()[1] - '0') * 10 + (s2.front()[2] - '0'));
-                }
-                s2.pop();
-                registers[r1] = 1000;
-                p.memory[registers[r1]] = "72";
-                y = stoi(p.memory[registers[r1]]);
-                registers[rd] = y;
-            }*/
-            if(isdigit(s2.front()[0]))
-            {
-                int z = 0;
-                int x = 0, r1;
-                if (isdigit(s2.front()[1]))
-                {
-                    x = int((s2.front()[0] - '0') * 10 + (s2.front()[1] - '0'));
-                    z = 4;
-                }
-                else
-                {
-                    x = int(s2.front()[0] - '0');
-                    z = 3;
-                }
-                if (isdigit(s2.front()[z + 1]))
-                {
-                    r1 = int((s2.front()[z] - '0') * 10 + (s2.front()[z] - '0') + x);
-                }
-                else
-                    r1 = int((s2.front()[z] - '0') + x);
-                registers[r1] = 1000;
-                p.memory[registers[r1]] = "72";
-                y = stoi(p.memory[registers[r1]]);
-                registers[rd] = y;
-            }
-            p.cores[i].pc++;
-        }
-        if (s2.front() == "addi")
+        if (isdigit(s2.front()[0]))
         {
-            s2.pop();
-            int rd = stoi(s2.front().substr(1));
-            s2.pop();
-            int r1 = stoi(s2.front().substr(1));
-            s2.pop();
-            int value = stoi(s2.front().substr(0));
-            registers[r1] = 6;
-            registers[rd] =registers[r1] + value;
-            // cout<< p.c[i].registers[rd]<<endl;
-            p.cores[i].pc++;
-        }
-        if (s2.front() == "bne")
-        {
-            s2.pop();
-            int rd = stoi(s2.front().substr(1));
-            s2.pop();
-            int r1 = stoi(s2.front().substr(1));
-            s2.pop();
-            if (rd != r1)
+            int z = 0;
+            int x = 0;
+            if (isdigit(s2.front()[1]))
             {
+                x = int((s2.front()[0] - '0') * 10 + (s2.front()[1] - '0'));
+                z = 4;
             }
-            p.cores[i].pc++;
+            else
+            {
+                x = int(s2.front()[0] - '0');
+                z = 3;
+            }
+            if (isdigit(s2.front()[z + 1]))
+            {
+                r1 = int((s2.front()[z] - '0') * 10 + (s2.front()[z+1] - '0'));
+            }
+            else
+            r1 = int((s2.front()[z] - '0'));
+            std::cout<<memory[1004]<<endl;
+            std::cout<<r1<<endl;
+            int i = registers[r1]+x;
+            std::cout<<i;
+            if(memory[i]!=""){
+            registers[rd]=stoi(memory[i]);}
+            else registers[rd]=0;
         }
+        pc++;
+    }
+     else if(s2.front()=="sw"){
+            int y;
+            s2.pop();
+            if (!isdigit(s2.front()[2]))
+            {
+                r1 = int(s2.front()[1] - '0');
+            }
+            else
+                r1 = int((s2.front()[1] - '0') * 10 + s2.front()[2] - '0');
+            s2.pop();
+            if (isdigit(s2.front()[0]))
+        {
+            int z = 0;
+            int x = 0;
+            if (isdigit(s2.front()[1]))
+            {
+                x = int((s2.front()[0] - '0') * 10 + (s2.front()[1] - '0'));
+                z = 4;
+            }
+            else
+            {
+                x = int(s2.front()[0] - '0');
+                z = 3;
+            }
+            if (isdigit(s2.front()[z + 1]))
+            {
+                rd = int((s2.front()[z] - '0') * 10 + (s2.front()[z+1] - '0'));
+            }
+            else
+                rd = int((s2.front()[z] - '0'));
+                memory[registers[rd]+x]=to_string(registers[r1]);
+        }
+        pc++;
+    }
+    else if (s2.front() == "beq")
+    {
+        s2.pop();
+        int rd = stoi(s2.front().substr(1));
+        s2.pop();
+        int r1 = stoi(s2.front().substr(1));
+        s2.pop();
+        if (registers[rd] == registers[r1])
+        {
+            string label = s2.front();
+            pc = label_addr[label];
+            return;
+        }
+        pc++;
+    }
+
+    else if (s2.front() == "j")
+    {
+        s2.pop();
+        string label = s2.front();
+        pc = label_addr[label];
+        return;
+    }
+    else if (s2.front() == "jal")
+    {
+        s2.pop();
+        string str=s2.front();
+        int rd = stoi(s2.front().substr(1));
+        s2.pop();
+        registers[rd] = pc + 1;
+        label_addr.insert(make_pair(str,registers[rd]));
+        string label = s2.front();
+        pc = label_addr[label];
+        return;
+    }
+    else
+    {
+        pc++;
+    }
 }
 
-    
-
-
-/*class processor
+void core::labels(int start_addr, string memory[])
 {
-public:
-    string memory[4096];
-    int clock;
-    processor()
+    for (int i = start_addr; i < start_addr + 2048; i++)
     {
-        for (int i = 0; i < 4096; i++)
+        stringstream ss(memory[i]);
+        string firstword;
+        ss >> firstword;
+        // std::cout<<"hiiii"<<"    firstword"<<endl;
+        if (!firstword.empty() && firstword.back() == ':')
         {
-            memory[i] = "";
+            // std::cout << firstword << endl;
+            firstword = firstword.substr(0, firstword.size() - 1);
+            // std::cout << firstword << " 99999999   "<<i<<endl;
+            label_addr.insert(make_pair(firstword, i + 1));
         }
-        clock = 0;
     }
-    core cores[2] = {core(), core()};
-    
-    void run();
-    void load_Program(string filename, int start_addr);
-};*/
+}
 
-void processor::load_Program(string filename, int start_addr) {
+void processor::load_Program(string filename, int start_addr)
+{
     ifstream file(filename);
     string line;
     int i = start_addr;
-    if (file.is_open()) {
-        while (getline(file, line) && i < 2048+start_addr) {  
+    if (file.is_open())
+    {
+        while (getline(file, line) && i < 2048 + start_addr)
+        {
+            if (line != "")
+            {
                 memory[i] = line;
                 i++;
+            }
         }
     }
-    if(clock<i)
-        clock=i;
     file.close();
 }
 
-void processor::run(string m[]){
-int j=0; 
-     while(( j<2048 && memory[j]!="" && memory[j+2048]!="") || (j>=2048 && memory[j]!="" && memory[j-2048]!="")){
-        
-        if(m[j]!="" && j<2048){
-            cores[0].execute(m[j]);
-        }
-       else if(m[j]!="" && j>=2048){
-            cores[1].execute(m[j]);
-        }
-         if(j<2048){
-                j=j+2047;
+void processor::run()
+{
+    cores[0].labels(0, memory);
+    cores[1].labels(2048, memory);
+    int flag = 1;
+    while (clock < 2048 && flag == 1)
+    {
+        flag = 0;
+        for (int i = 0; i < 2; i++)
+        {
+            if (memory[cores[0].pc] != "" && i == 0)
+            {
+                cores[0].execute(memory[cores[0].pc], memory);
+                flag = 1;
             }
-            else j=j-2048;
-            j++;
+            else if (memory[cores[1].pc + 2048] != "" && i == 1)
+            {
+                cores[1].execute(memory[cores[1].pc + 2048], memory);
+                flag = 1;
             }
-        /*for(int k=0;k<3;k++){
-            cores[0].execute(m[k]);
-        }*/
+        }
+        clock++;
+    }
 }
-
-
 
 int main()
 {
     processor sim;
-    core c;
     sim.load_Program("a.txt", 0);
     sim.load_Program("b.txt", 2048);
-    sim.run(sim.memory);
-    cout<<"[";
-    for(int i=0;i<32;i++){
-        cout<<sim.cores[0].registers[i]<<" ";
+    sim.cores[0].registers[1] = 3;
+    sim.cores[0].registers[2] = 1;
+    sim.cores[1].registers[10] = 72;
+    sim.cores[1].registers[11] = 2;
+    sim.cores[0].registers[27] = 2000;
+    sim.memory[2000] = "333";
+    sim.run();
+    std::cout << "[";
+    for (int i = 0; i < 32; i++)
+    {
+        std::cout << sim.cores[0].registers[i] << " ";
     }
-    cout<<"]";
-    cout<<endl;
-    cout<<"[";
-    for(int i=0;i<32;i++){
-        cout<<sim.cores[1].registers[i]<<" ";
+    std::cout << "]";
+    std::cout << endl;
+    std::cout << "[";
+    for (int i = 0; i < 32; i++)
+    {
+        std::cout << sim.cores[1].registers[i] << " ";
     }
-    cout<<"]";
-    cout<<endl;
-    
-    //sim.print();
+    std::cout << "]";
+    std::cout << endl;
+
+    // sim.print();
 }
