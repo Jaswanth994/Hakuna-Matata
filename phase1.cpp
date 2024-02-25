@@ -414,6 +414,40 @@ void writeStringArrayToFile(const string filename, string array[], int size) {
     }
     outputFile.close();
 }
+// printing the Executed bubblesort in core1 and selection sort in core2 and contetnts of the both registers
+void print(const string filename,int a[],int b[],string memory[],int size){
+    ofstream outputFile(filename);
+   if (!outputFile.is_open()) {
+        cerr << "Error: Unable to open file " << filename << endl;
+        exit(EXIT_FAILURE);
+    }
+    outputFile<<"  Registers of Core 1"<<endl;
+    outputFile<<"[";
+    for (int i = 0; i < size; i++) {
+        outputFile <<a[i] <<" ";
+    }
+    outputFile<<"]"<<endl;
+    outputFile<<"\n  Registers of Core 2"<<endl;
+    outputFile<<"[";
+    for (int i = 0; i < size; i++) {
+        outputFile <<b[i] <<" ";
+    }
+    outputFile<<"]"<<endl;
+     outputFile<<"\n   Bubble Sort  "<<endl;
+    for (int i = 1003; i < 1014; i++)
+    {
+         outputFile<< memory[i] << " ";
+    }
+     outputFile<<endl;
+
+    outputFile<<"\n   Selection Sort  "<<endl;
+    for (int i = 3049; i < 3070; i++)
+    {
+         outputFile<< memory[i] << " ";
+    }
+     outputFile<<endl;
+    outputFile.close();
+}
 
 int main()
 {
@@ -428,36 +462,8 @@ int main()
     sim.load_data(sim.memory, 2048);
     
     sim.run();
-
-    // to print the registers in core1 and core2 
-    std::cout<<"\nregisters of core 1 : ";
-    std::cout << "[";
-    for (int i = 0; i < 32; i++)
-    {
-        std::cout << sim.cores[0].registers[i] << " ";
-    }
-    std::cout << "]"<<endl;
-    std::cout<<"registers of core 2 : ";
-    std::cout << "[";
-    for (int i = 0; i < 32; i++)
-    {
-        std::cout << sim.cores[1].registers[i] << " ";
-    }
-    std::cout << "]"<<endl;
-
-    // printing the Executed bubblesort in core1 and selection sort in core2
-    std::cout<<"\n   Bubble Sort  "<<endl;
-    for (int i = 1003; i < 1014; i++)
-    {
-        std::cout << sim.memory[i] << " ";
-    }
-    std::cout<<endl;
-
-    std::cout<<"\n   Selection Sort  "<<endl;
-    for (int i = 3049; i < 3070; i++)
-    {
-        std::cout << sim.memory[i] << " ";
-    }
-    std::cout<<endl;
-    writeStringArrayToFile("output.txt", sim.memory, 4096);
+     // printing the Executed bubblesort in core1 and selection sort in core2 and contetnts of the both registers
+    print("output.txt",sim.cores[0].registers,sim.cores[1].registers,sim.memory,32);
+    //For printing the content present in the memory
+    writeStringArrayToFile("memory.txt", sim.memory, 4096);
 }
