@@ -1,6 +1,6 @@
 .data
 str: .string "\n"
-array: .word 20 19 18 1 2 3 222 11 6 6 10
+array: .word 20 19 18 1 2 3 777 11 6 6 10
 .text
 la x30 array     # loading address to x30
 addi x2 x0 0        # int i=0

@@ -401,6 +401,7 @@ void processor::run()
         clock++;        // Increment clock cycle
     }
 }
+
 //For printing the content present in the memory
 void writeStringArrayToFile(const string filename, string array[], int size) {
     ofstream outputFile(filename);
@@ -414,6 +415,7 @@ void writeStringArrayToFile(const string filename, string array[], int size) {
     }
     outputFile.close();
 }
+
 // printing the Executed bubblesort in core1 and selection sort in core2 and contetnts of the both registers
 void print(const string filename,int a[],int b[],string memory[],int size){
     ofstream outputFile(filename);
@@ -434,7 +436,7 @@ void print(const string filename,int a[],int b[],string memory[],int size){
     }
     outputFile<<"]"<<endl;
      outputFile<<"\n   Bubble Sort  "<<endl;
-    for (int i = 1003; i < 1014; i++)
+    for (int i = 1003; i < 1015; i++)
     {
          outputFile<< memory[i] << " ";
     }
