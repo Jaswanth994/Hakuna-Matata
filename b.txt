@@ -1,3 +1,0 @@
-add X1 X2 X3
-sub x4 x2 X3  
-addi x5 x6 7

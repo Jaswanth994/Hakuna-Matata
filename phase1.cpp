@@ -401,6 +401,19 @@ void processor::run()
         clock++;        // Increment clock cycle
     }
 }
+//For printing the content present in the memory
+void writeStringArrayToFile(const string filename, string array[], int size) {
+    ofstream outputFile(filename);
+    if (!outputFile.is_open()) {
+        cerr << "Error: Unable to open file " << filename << endl;
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < size; i++) {
+        if(array[i]!="")
+        outputFile << "Memory Index--->"<<i<<"    ----> "<<array[i] <<endl;
+    }
+    outputFile.close();
+}
 
 int main()
 {
@@ -446,4 +459,5 @@ int main()
         std::cout << sim.memory[i] << " ";
     }
     std::cout<<endl;
+    writeStringArrayToFile("output.txt", sim.memory, 4096);
 }
