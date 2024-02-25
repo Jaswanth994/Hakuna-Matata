@@ -25,7 +25,7 @@ labels      ----> used a hashmap to store all the labels and their address
 
 execute     ----> to execute all the instructions stored in memory 
 
-Finally printing the memory and sorted output in the memory.txt and output.txt respectively
+Finally printing the memory and sorted output in the memory.txt and output.txt respectively.
 
 ## Date:25/02/2024
 
