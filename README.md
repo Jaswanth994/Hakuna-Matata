@@ -12,12 +12,17 @@ _In the memory allocated for each core also divide into two parts one for storin
 _So for core1 we took 0 to 1000 places in memory for storing instructions and 1000 to 2047 for storing data segment, lly for core2 also_
 
 So in the proccessor class we declared memory and inherited classes like :
+
 load_program ----> to load all instructions into memory
+
 load_data    ----> to load all data segments like array strings into memory
+
 Run         ----> to execute the loaded instructions _paralley from core1 and core2_
 
 In the core We declared 32 registers and inherited classes like :
+
 labels      ----> used a hashmap to store all the labels and their address
+
 execute     ----> to execute all the instructions stored in memory 
 
 Finally printing the memory and sorted output in the memory.txt and output.txt respectively
