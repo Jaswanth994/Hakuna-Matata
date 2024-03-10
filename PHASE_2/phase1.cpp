@@ -20,6 +20,7 @@ public:
     bool forwarding;
     bool branch_proceed;
     int num_stalls;
+    int temp_stall;
     int num_data_hazards;
     int num_control_hazards;
     int result_exe;
@@ -43,6 +44,7 @@ public:
         b1 = b2 = b3 = b4 = false;
         result_exe = 0;
         result_mem = 0;
+        temp_stall=0;
     }
 };
 class processor
@@ -309,9 +311,22 @@ public:
                         core.Buffers[i2].rs1 = int((tokens.front()[z] - '0'));
                 }
             }
+            detect_data_Hazard(core);
             i2++;
         }
     }
+    void detect_data_Hazard(core core)
+              {
+                int i=i2-1;
+                while(i==i2-4 && i>=0){
+                    if(core.Buffers[i2].rs1 == core.Buffers[i].rd || core.Buffers[i2].rs2== core.Buffers[i].rd){
+                        core.temp_stall=3-(i2-i-1);
+                        core.num_stalls+=core.temp_stall;
+                        break;
+                    }
+                    i--;
+                }
+             }
 };
 
 class Buffer
