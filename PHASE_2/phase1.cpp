@@ -18,14 +18,12 @@ public:
     void labels(int start_addr, string memory[]);      // Method to extract labels and their addresses
     map<string, int> label_addr;                       // Map to store label-address mappings
     bool forwarding;
-    bool branch_proceed;
     int num_stalls;
     int temp_stall;
     int num_data_hazards;
     int num_control_hazards;
-    int result_exe;
-    int result_mem;
-    Buffer Buffers[100];
+    
+    Buffer* Buffers=new Buffer[100];
     // vector<string>IF_ID,ID_Ex,Ex_MEM,MEM_WB;
     bool b1, b2, b3, b4;
     // Constructor to initialize registers and program counter
@@ -37,14 +35,12 @@ public:
         }
         pc = 0;
         forwarding = false;
-        branch_proceed = false;
         num_stalls = 0;
         num_data_hazards = 0;
         num_control_hazards = 0;
         b1 = b2 = b3 = b4 = false;
-        result_exe = 0;
-        result_mem = 0;
         temp_stall=0;
+        
     }
 };
 class processor
@@ -73,104 +69,104 @@ public:
 class pipe_line_control
 {
 public:
-    int i1 = 0, i2 = 0, i3 = 0, i4 = 0;
+    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0;
     void Write_Back(core core, string memory[])
     {
-        if (core.b4)
+        if (core.b4 && core.temp_stall==0)
         {
-            string opcode = core.Buffers[i4].opcode;
+            string opcode = core.Buffers[i5].opcode;
             if (opcode == "add")
             {
-                core.registers[core.Buffers[i4].rd] = core.result_exe;
+                core.registers[core.Buffers[i5].rd] = core.Buffers[i5].result_exe;
             }
             if (opcode == "sub")
             {
-                core.registers[core.Buffers[i4].rd] = core.result_exe;
+                core.registers[core.Buffers[i5].rd] = core.Buffers[i5].result_exe;
             }
             if (opcode == "addi")
             {
-                core.registers[core.Buffers[i4].rd] = core.result_exe;
+                core.registers[core.Buffers[i5].rd] = core.Buffers[i5].result_exe;
             }
             if (opcode == "lw")
             {
-                core.registers[core.Buffers[i4].rd] = core.result_mem;
+                core.registers[core.Buffers[i5].rd] = core.Buffers[i5].result_mem;
             }
             if (opcode == "sw")
             {
-                memory[core.result_exe] = core.result_mem;
+                memory[core.Buffers[i5].result_exe] = core.Buffers[i5].result_mem;
             }
             if (opcode == "bne" || opcode == "beq" || opcode == "blt")
             {
-                if (core.branch_proceed)
+                if (core.Buffers[i5].branch_proceed)
                 {
-                    core.pc = core.label_addr[core.Buffers[i4].label];
+                    core.pc = core.label_addr[core.Buffers[i5].label];
                 }
             }
-            i4++;
+            i5++;
         }
     }
     void Mem(core core, string memory[])
     {
-        if (core.b3)
+        if (core.b3 && core.temp_stall==0)
         {
             core.b4 = true;
             string opcode = core.Buffers[i4].opcode;
             if (opcode == "lw")
             {
-                core.result_mem = stoi(memory[core.result_mem]);
+                core.Buffers[i4].result_mem = stoi(memory[core.Buffers[i4].result_mem]);
             }
             if (opcode == "sw")
             {
-                core.result_mem = core.registers[core.Buffers[i4].rd];
+                core.Buffers[i4].result_mem = core.registers[core.Buffers[i4].rd];
             }
-            i3++;
+            i4++;
         }
     }
     void Execution(core core)
     {
-        if (core.b2)
+        if (core.b2 && core.temp_stall==0)
         {
             core.b3 = true;
             string opcode = core.Buffers[i3].opcode;
             if (opcode == "add")
             {
-                core.result_exe = core.registers[core.Buffers[i3].rs1] + core.registers[core.Buffers[i3].rs2];
+                core.Buffers[i3].result_exe = core.registers[core.Buffers[i3].rs1] + core.registers[core.Buffers[i3].rs2];
             }
             else if (opcode == "sub")
             {
-                core.result_exe = core.registers[core.Buffers[i3].rs1] - core.registers[core.Buffers[i3].rs2];
+                core.Buffers[i3].result_exe = core.registers[core.Buffers[i3].rs1] - core.registers[core.Buffers[i3].rs2];
             }
             else if (opcode == "addi")
             {
-                core.result_exe = core.registers[core.Buffers[i3].rs1] + core.Buffers[i3].value;
+                core.Buffers[i3].result_exe = core.registers[core.Buffers[i3].rs1] + core.Buffers[i3].value;
             }
             else if (opcode == "lw")
             {
-                core.result_exe = core.registers[core.Buffers[i3].rs1] + core.Buffers[i3].offset;
+                core.Buffers[i3].result_exe = core.registers[core.Buffers[i3].rs1] + core.Buffers[i3].offset;
             }
             else if (opcode == "sw")
             {
-                core.result_exe = core.registers[core.Buffers[i3].rs1] + core.Buffers[i3].offset;
+                core.Buffers[i3].result_exe = core.registers[core.Buffers[i3].rs1] + core.Buffers[i3].offset;
             }
             else if (opcode == "bne")
             {
                 if (core.registers[core.Buffers[i3].rs1] != core.registers[core.Buffers[i3].rs2])
                 {
-                    core.branch_proceed = true;
+                    core.Buffers[i3].branch_proceed = true;
                 }
             }
             else if (opcode == "blt")
             {
                 if (core.registers[core.Buffers[i3].rs1] < core.registers[core.Buffers[i3].rs2])
                 {
-                    core.branch_proceed = true;
+                    core.Buffers[i3].branch_proceed = true;
                 }
             }
             else if (opcode == "beq")
             {
                 if (core.registers[core.Buffers[i3].rs1] == core.registers[core.Buffers[i3].rs2])
                 {
-                    core.branch_proceed = true;
+                    core.Buffers[i3].branch_proceed = true;
                 }
             }
             else if (opcode == "j")
@@ -198,7 +194,7 @@ public:
     void Fetch(core core, string memory[])
     {
 
-        if (memory[core.pc] != "")
+        if (memory[core.pc] != "" && core.temp_stall==0)
         {
             string Instruction = memory[core.pc];
             core.Buffers[i1].Instruction = Instruction;
@@ -211,7 +207,11 @@ public:
     void Ins_decode(core core)
     {
 
-        if (core.b1)
+        if(core.temp_stall!=0){
+            core.temp_stall--;
+        }
+
+        if (core.b1 && core.temp_stall==0)
         {
             core.b2 = true;
             string Instruction = core.Buffers[i2].Instruction;
@@ -340,6 +340,12 @@ public:
     int value;
     string str;
     int offset;
+    int result_exe;
+    int result_mem;
+    bool branch_proceed;
+    Buffer(){
+        branch_proceed=false;
+    }
 };
 
 // Method to execute instructions in the core
@@ -685,7 +691,7 @@ void processor::run()
             pipe_line.Ins_decode(cores[i]);
             pipe_line.Fetch(cores[i], memory);
 
-            if (memory[cores[0].pc] != "" && i == 0)
+            /*if (memory[cores[0].pc] != "" && i == 0)
             {
                 cores[0].execute(memory[cores[0].pc], memory); // Execute instruction in core 1
                 flag = 1;
@@ -695,9 +701,13 @@ void processor::run()
                 cores[1].execute(memory[cores[1].pc], memory); // Execute instruction in core 2
                 flag = 1;
             }
+            */
+
         }
         clock++; // Increment clock cycle
     }
+    cout<<cores[0].num_stalls<<" ;l;;;;;; "<<endl;
+    cout<<cores[1].num_stalls<<" ............ "<<endl;
 }
 
 // For printing the content present in the memory
@@ -761,17 +771,17 @@ int main()
     processor sim;
 
     // Load programs into memory
-    sim.load_Program("bubblesort.txt", 0);
-    sim.load_Program("selectionsort.txt", 2048);
+    sim.load_Program("test1.txt", 0);
+    sim.load_Program("test2.txt", 2048);
 
     // load data into memory like arrays and strings
     sim.load_data(sim.memory, 0);
     sim.load_data(sim.memory, 2048);
 
-    cout << "Enter 1 for data_Forwarding and 2 for NOT_Forwarding : ";
+   /* cout << "Enter 1 for data_Forwarding and 2 for NOT_Forwarding : ";
     int forwarding;
     cin >> forwarding;
-
+*/
     sim.run();
     // printing the Executed bubblesort in core1 and selection sort in core2 and contetnts of the both registers
     print("output.txt", sim.cores[0].registers, sim.cores[1].registers, sim.memory, 32);
