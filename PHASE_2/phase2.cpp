@@ -98,7 +98,7 @@ public:
     {
         if (core.b4 )
         {
-            cout << "wb  ";
+            std::cout << "wb  ";
             string opcode = core.Buffers[core.i5].opcode;
             if (opcode == "add")
             {
@@ -135,7 +135,7 @@ public:
     {
         if (core.b3)
         {
-            cout << "mem  ";
+            std::cout << "mem  ";
             core.b4 = true;
             string opcode = core.Buffers[core.i4].opcode;
             if (opcode == "lw")
@@ -156,7 +156,7 @@ public:
     {
         if (core.b2)
         {
-            cout << "exe  ";
+            std::cout << "exe  ";
             core.b3 = true;
             string opcode = core.Buffers[core.i3].opcode;
             if (opcode == "add")
@@ -227,11 +227,11 @@ public:
 
     void Ins_decode(core &core)
     {
-        //cout<<core.b2<<"frarae"<<core.x<<endl;
+        //std::cout<<core.b2<<"frarae"<<core.x<<endl;
         if (core.temp_stall != 0)
         {
             core.temp_stall--;
-           // cout<<core.temp_stall<<" ................ "<<core.b1<<endl;
+           // std::cout<<core.temp_stall<<" ................ "<<core.b1<<endl;
             if(core.b1==false && core.temp_stall==0)
                {
                     core.b1=true;
@@ -242,7 +242,7 @@ public:
        
         if (core.b1 && core.temp_stall == 0)
         {
-            cout << "id  " ;
+            std::cout << "id  " ;
             core.b2 = true;
             string Instruction = core.Buffers[core.i2].Instruction;
             string word;
@@ -261,7 +261,7 @@ public:
                 core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
                 tokens.pop();
                 core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
-                 //cout<<core.Buffers[core.i2].rs1<<"bunny"<<endl;
+                 //std::cout<<core.Buffers[core.i2].rs1<<"bunny"<<endl;
                 tokens.pop();
                 core.Buffers[core.i2].rs2 = stoi(tokens.front().substr(1));
             }
@@ -367,7 +367,7 @@ public:
 
       if (memory[core.pc] != "" && core.temp_stall == 0 )
         {
-            cout << "fetch  " ;
+            std::cout << "fetch  " ;
             string Instruction = memory[core.pc];
             core.Buffers[core.i1].Instruction = Instruction;
             core.i1++;
@@ -384,8 +384,8 @@ public:
     void detect_data_Hazard(core &core)
               {
                 int i=core.i2-1;
-                    cout<<core.i2<<endl;
-                  // cout<<core.Buffers[core.i2].rs1<<"  "<<core.Buffers[core.i2].rs2<<" "<<core.Buffers[i].rd<<endl;
+                    std::cout<<core.i2<<endl;
+                  // std::cout<<core.Buffers[core.i2].rs1<<"  "<<core.Buffers[core.i2].rs2<<" "<<core.Buffers[i].rd<<endl;
                     
 
                     if(core.Buffers[core.i2].opcode=="la" && !core.forwarding){
@@ -410,7 +410,7 @@ public:
                        }
                     }
                     else if(core.i2>1){
-                      //  cout<<" HIII"<<endl;
+                      //  std::cout<<" HIII"<<endl;
                         if(core.Buffers[core.i2].rs1 == core.Buffers[i-1].rd || core.Buffers[core.i2].rs2== core.Buffers[i-1].rd){
                             if(core.Buffers[core.i2-1].rs1 == core.Buffers[i-1].rd || core.Buffers[core.i2-1].rs2== core.Buffers[i-1].rd){
                                 
@@ -439,7 +439,7 @@ void processor::load_Program(string filename, int start_addr)
     // file handling
     if (!file.is_open())
     {
-        cout << "Error: Unable to open file " << filename << endl;
+        std::cout << "Error: Unable to open file " << filename << endl;
         exit(EXIT_FAILURE);
     }
     if (file.is_open())
@@ -530,11 +530,11 @@ void core::labels(int start_addr, string memory[])
 void processor::run()
 {
 
-     cout << "IN core 1 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
+     std::cout << "IN core 1 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
      int forwarding;
      cin >> forwarding;
      cores[0].forwarding=forwarding;
-     cout << "IN core 2 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
+     std::cout << "IN core 2 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
      cin>>forwarding;
      cores[1].forwarding=forwarding;
  
@@ -550,8 +550,8 @@ void processor::run()
         //  Loop through cores to execute instructions in parallel
         if(flag1==1){
             cores[0].num_Clock_Cycles=clock+1;
-            cout<<endl;
-            cout<<"clock "<< clock+1<<" ===================  " << " core " << 0<<endl;
+            std::cout<<endl;
+           // std::cout<<"clock "<< clock+1<<" ===================  " << " core " << 0<<endl;
             pipe_line.Write_Back(cores[0], memory);
             pipe_line.Mem(cores[0], memory);
             pipe_line.Execution(cores[0]);
@@ -562,8 +562,8 @@ void processor::run()
         }
         if(flag2==1){
             cores[1].num_Clock_Cycles=clock+1;
-            cout<<endl;
-            cout<<"clock "<< clock+1<<" ===================  " << " core " << 1<<endl;
+            std::cout<<endl;
+           // std::cout<<"clock "<< clock+1<<" ===================  " << " core " << 1<<endl;
             pipe_line.Write_Back(cores[1], memory);
             pipe_line.Mem(cores[1], memory);
             pipe_line.Execution(cores[1]);
@@ -572,15 +572,9 @@ void processor::run()
             if(cores[1].num_Instructions==cores[1].num_WB)
                 flag2=0;
         }
-        cout<<endl;
+        std::cout<<endl;
         clock++; // Increment clock cycle
     }
-    cout <<"Num_Stalls in core 1 : "<< cores[0].num_stalls << endl;
-    cout <<"Num_Stalls in core 2 : "<< cores[1].num_stalls << endl;
-    cout <<"Num_clock_Cycles in core 1 : "<< cores[0].num_Clock_Cycles << endl;
-    cout <<"Num_clock_Cycles in core 2 : "<< cores[1].num_Clock_Cycles << endl;
-    cout <<"Num_Instructions in core 1 : "<< cores[0].num_Instructions<< endl;
-    cout <<"Num_Instructions in core 2 : "<< cores[1].num_Instructions<< endl;
 }
 
 // For printing the content present in the memory
@@ -622,19 +616,41 @@ void print(const string filename, int a[], int b[], string memory[], int size)
     {
         outputFile << b[i] << " ";
     }
-    outputFile << "]" << endl;
-    outputFile << "\n   Bubble Sort  " << endl;
-    for (int i = 1003; i < 1015; i++)
-    {
-        outputFile << memory[i] << " ";
-    }
     outputFile << endl;
+    outputFile.close();
+}
 
-    outputFile << "\n   Selection Sort  " << endl;
-    for (int i = 3049; i < 3070; i++)
+void print1(const string filename,int c0_stall,int c1_stall,int c0_cycles,int c1_cycles,int c0_in,int c1_in,bool c0_fwd,bool c1_fwd){
+    ofstream outputFile(filename);
+    if (!outputFile.is_open())
     {
-        outputFile << memory[i] << " ";
+        cerr << "Error: Unable to open file " << filename << endl;
+        exit(EXIT_FAILURE);
     }
+    float x;
+    outputFile<<"----------------CORE-1---------------"<<endl;
+    if(c0_fwd){
+        outputFile<<"With Data Forwarding";
+    }
+    else outputFile<<"Without Data Forwarding";
+    x=c0_in/float(c0_cycles);
+    outputFile<<"Num_Stalls in core 1 : "<< c0_stall << endl;
+    outputFile<<"Num_clock_Cycles in core 1 : "<< c0_cycles << endl;
+    outputFile<<"Num_Instructions in core 1 : "<<c0_in<<endl;
+    outputFile<<"Instruction per cycle core 1: "<<x<<endl;
+    outputFile<<"-------------------------------------"<<endl;
+    outputFile<<endl;
+    outputFile<<"----------------CORE-2---------------"<<endl;
+    if(c1_fwd){
+        outputFile<<"With Data Forwarding";
+    }
+    else outputFile<<"Without Data Forwarding";
+    x=c1_in/float(c1_cycles);
+    outputFile<<"Num_Stalls in core 2 : "<< c1_stall << endl;
+    outputFile<<"Num_clock_Cycles in core 2 : "<< c1_cycles << endl;
+    outputFile<<"Num_Instructions in core 2 : "<<c1_in<<endl;
+    outputFile<<"Instruction per cycle core 2: "<<x<<endl;
+    outputFile<<"-------------------------------------"<<endl;
     outputFile << endl;
     outputFile.close();
 }
@@ -644,8 +660,8 @@ int main()
     processor sim;
 
     // Load programs into memory
-    sim.load_Program("test1.txt", 0);
-    sim.load_Program("test2.txt", 2048);
+    sim.load_Program("a.txt", 0);
+    sim.load_Program("b.txt", 2048);
 
     // load data into memory like arrays and strings
     sim.load_data(sim.memory, 0);
@@ -655,6 +671,7 @@ int main()
     sim.run();
     // printing the Executed bubblesort in core1 and selection sort in core2 and contetnts of the both registers
     print("output.txt", sim.cores[0].registers, sim.cores[1].registers, sim.memory, 32);
+    print1("Cores-info-output.txt",sim.cores[0].num_stalls,sim.cores[1].num_stalls,sim.cores[0].num_Clock_Cycles,sim.cores[1].num_Clock_Cycles,sim.cores[0].num_Instructions,sim.cores[1].num_Instructions,sim.cores[0].forwarding,sim.cores[1].forwarding);
     // For printing the content present in the memory
     writeStringArrayToFile("memory.txt", sim.memory, 4096);
 }
