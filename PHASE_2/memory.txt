@@ -1,100 +1,17 @@
-Memory Index--->0    ----> .data
-Memory Index--->1    ----> str: .string "\n"
-Memory Index--->2    ----> array: .word 20 19 18 1 2 3 777 11 6 6 10
-Memory Index--->3    ----> .text
-Memory Index--->4    ----> la x30 array     # loading address to x30
-Memory Index--->5    ----> addi x2 x0 0        # int i=0
-Memory Index--->6    ----> addi x20 x0 11       # length of outer loop 20
-Memory Index--->7    ----> addi x21 x0 11      # length of inner loop 20
-Memory Index--->8    ----> addi x7 x0 0         # variable i used in print function
-Memory Index--->9    ----> outer_loop:
-Memory Index--->10    ----> la x1 array         #loading array address to x1
-Memory Index--->11    ----> addi x4 x0 1        # variable to check if swap is required or not
-Memory Index--->12    ----> addi x3 x0 0        # int j=0
-Memory Index--->13    ----> addi x21 x21 -1     #decreasing inner loop by 1
-Memory Index--->14    ----> inner_loop:
-Memory Index--->15    ----> lw x15 0(x1)        # load arr[j]
-Memory Index--->16    ----> lw x16 1(x1) 
-Memory Index--->17    ---->                    # load arr[j+1]
-Memory Index--->18    ----> blt x16 x15 swap
-Memory Index--->19    ----> l:  
-Memory Index--->20    ---->     addi x3 x3 1         # j++
-Memory Index--->21    ---->     addi x1 x1 1            # increase x1
-Memory Index--->22    ---->     blt x3 x21 inner_loop           # condition for inner-for loop
-Memory Index--->23    ---->     bne x4 x0 print                  # if no swapping required then it directly prints
-Memory Index--->24    ---->     addi x2 x2 1 #i++
-Memory Index--->25    ---->     blt x2 x20 outer_loop           # condition for outer-for loop
-Memory Index--->26    ---->     j print
-Memory Index--->27    ----> swap:
-Memory Index--->28    ----> addi x4 x0 0
-Memory Index--->29    ----> sw x16 0(x1)            # swapping both arr[j] and arr[j+1]
-Memory Index--->30    ----> sw x15 1(x1)
-Memory Index--->31    ----> j l                     # jump to l
-Memory Index--->32    ----> print:
-Memory Index--->1001    ----> str:
-Memory Index--->1002    ----> \n
-Memory Index--->1003    ----> array:
-Memory Index--->1004    ----> 1
-Memory Index--->1005    ----> 2
-Memory Index--->1006    ----> 3
-Memory Index--->1007    ----> 6
-Memory Index--->1008    ----> 6
-Memory Index--->1009    ----> 10
-Memory Index--->1010    ----> 11
-Memory Index--->1011    ----> 18
-Memory Index--->1012    ----> 19
-Memory Index--->1013    ----> 20
-Memory Index--->1014    ----> 777
-Memory Index--->2048    ----> .data
-Memory Index--->2049    ----> arr: .word 7 2 6 9 8 5 1 15 10 11 16 14 13 12 19 17 18 200 3 4
-Memory Index--->2050    ----> .text
-Memory Index--->2051    ----> start:
-Memory Index--->2052    ----> addii x1 x0 0
-Memory Index--->2053    ----> addi x2 x0 0
-Memory Index--->2054    ----> addi x3 x0 18
-Memory Index--->2055    ----> la x9 arr
-Memory Index--->2056    ----> la x10 arr
-Memory Index--->2057    ----> li x4 19
-Memory Index--->2058    ----> li x7 20
-Memory Index--->2059    ----> la x11 arr
-Memory Index--->2060    ----> la x14 arr
-Memory Index--->2061    ----> loop:
-Memory Index--->2062    ----> addi x2 x1 1
-Memory Index--->2063    ----> addi x9 x14 0
-Memory Index--->2064    ----> addi x15 x14 1
-Memory Index--->2065    ----> loop1:
-Memory Index--->2066    ----> beq x7 x2 exit
-Memory Index--->2067    ----> lw x5 0(x9)
-Memory Index--->2068    ----> lw x6 0(x15)
-Memory Index--->2069    ----> blt x5 x6 exit2
-Memory Index--->2070    ----> sw x5 0(x15)
-Memory Index--->2071    ----> sw x6 0(x9)
-Memory Index--->2072    ----> exit2: 
-Memory Index--->2073    ----> addi x15 x15 1
-Memory Index--->2074    ----> addi x2 x2 1
-Memory Index--->2075    ----> j loop1
-Memory Index--->2076    ----> exit:
-Memory Index--->2077    ----> addi x1 x1 1
-Memory Index--->2078    ----> addi x14 x14 1
-Memory Index--->2079    ----> bne x1 x4 loop
-Memory Index--->3049    ----> arr:
-Memory Index--->3050    ----> 1
-Memory Index--->3051    ----> 2
-Memory Index--->3052    ----> 3
-Memory Index--->3053    ----> 4
-Memory Index--->3054    ----> 5
-Memory Index--->3055    ----> 6
-Memory Index--->3056    ----> 7
-Memory Index--->3057    ----> 8
-Memory Index--->3058    ----> 9
-Memory Index--->3059    ----> 10
-Memory Index--->3060    ----> 11
-Memory Index--->3061    ----> 12
-Memory Index--->3062    ----> 13
-Memory Index--->3063    ----> 14
-Memory Index--->3064    ----> 15
-Memory Index--->3065    ----> 16
-Memory Index--->3066    ----> 17
-Memory Index--->3067    ----> 18
-Memory Index--->3068    ----> 19
-Memory Index--->3069    ----> 200
+Memory Index--->0    ----> .data 
+Memory Index--->1    ----> array: .word 1 2 3 4
+Memory Index--->2    ----> .text
+Memory Index--->3    ----> la x2 array
+Memory Index--->4    ----> lw x1 0(x2)
+Memory Index--->5    ----> addi x3 x0 99
+Memory Index--->6    ----> addi x4 x3 1
+Memory Index--->1001    ----> array:
+Memory Index--->1002    ----> 1
+Memory Index--->1003    ----> 2
+Memory Index--->1004    ----> 3
+Memory Index--->1005    ----> 4
+Memory Index--->2048    ----> addi x2 x3 666
+Memory Index--->2049    ----> addi x1 x0 88
+Memory Index--->2050    ----> addi x4 x1 77
+Memory Index--->2051    ----> add x5 x1 x4
+Memory Index--->2052    ----> sub x6 x5 x2 

@@ -98,7 +98,7 @@ public:
     {
         if (core.b4 )
         {
-            std::cout << "wb  ";
+           // std::cout << "wb  ";
             string opcode = core.Buffers[core.i5].opcode;
             if (opcode == "add")
             {
@@ -135,7 +135,7 @@ public:
     {
         if (core.b3)
         {
-            std::cout << "mem  ";
+           // std::cout << "mem  ";
             core.b4 = true;
             string opcode = core.Buffers[core.i4].opcode;
             if (opcode == "lw")
@@ -156,7 +156,7 @@ public:
     {
         if (core.b2)
         {
-            std::cout << "exe  ";
+           // std::cout << "exe  ";
             core.b3 = true;
             string opcode = core.Buffers[core.i3].opcode;
             if (opcode == "add")
@@ -242,7 +242,7 @@ public:
        
         if (core.b1 && core.temp_stall == 0)
         {
-            std::cout << "id  " ;
+           // std::cout << "id  " ;
             core.b2 = true;
             string Instruction = core.Buffers[core.i2].Instruction;
             string word;
@@ -367,7 +367,7 @@ public:
 
       if (memory[core.pc] != "" && core.temp_stall == 0 )
         {
-            std::cout << "fetch  " ;
+           // std::cout << "fetch  " ;
             string Instruction = memory[core.pc];
             core.Buffers[core.i1].Instruction = Instruction;
             core.i1++;
@@ -384,7 +384,7 @@ public:
     void detect_data_Hazard(core &core)
               {
                 int i=core.i2-1;
-                    std::cout<<core.i2<<endl;
+                  //  std::cout<<core.i2<<endl;
                   // std::cout<<core.Buffers[core.i2].rs1<<"  "<<core.Buffers[core.i2].rs2<<" "<<core.Buffers[i].rd<<endl;
                     
 
@@ -550,7 +550,7 @@ void processor::run()
         //  Loop through cores to execute instructions in parallel
         if(flag1==1){
             cores[0].num_Clock_Cycles=clock+1;
-            std::cout<<endl;
+            //std::cout<<endl;
            // std::cout<<"clock "<< clock+1<<" ===================  " << " core " << 0<<endl;
             pipe_line.Write_Back(cores[0], memory);
             pipe_line.Mem(cores[0], memory);
@@ -562,7 +562,7 @@ void processor::run()
         }
         if(flag2==1){
             cores[1].num_Clock_Cycles=clock+1;
-            std::cout<<endl;
+            //std::cout<<endl;
            // std::cout<<"clock "<< clock+1<<" ===================  " << " core " << 1<<endl;
             pipe_line.Write_Back(cores[1], memory);
             pipe_line.Mem(cores[1], memory);
@@ -572,7 +572,7 @@ void processor::run()
             if(cores[1].num_Instructions==cores[1].num_WB)
                 flag2=0;
         }
-        std::cout<<endl;
+        //std::cout<<endl;
         clock++; // Increment clock cycle
     }
 }
@@ -630,9 +630,9 @@ void print1(const string filename,int c0_stall,int c1_stall,int c0_cycles,int c1
     float x;
     outputFile<<"----------------CORE-1---------------"<<endl;
     if(c0_fwd){
-        outputFile<<"With Data Forwarding";
+        outputFile<<"With Data Forwarding\n";
     }
-    else outputFile<<"Without Data Forwarding";
+    else outputFile<<"Without Data Forwarding\n";
     x=c0_in/float(c0_cycles);
     outputFile<<"Num_Stalls in core 1 : "<< c0_stall << endl;
     outputFile<<"Num_clock_Cycles in core 1 : "<< c0_cycles << endl;
@@ -642,9 +642,9 @@ void print1(const string filename,int c0_stall,int c1_stall,int c0_cycles,int c1
     outputFile<<endl;
     outputFile<<"----------------CORE-2---------------"<<endl;
     if(c1_fwd){
-        outputFile<<"With Data Forwarding";
+        outputFile<<"With Data Forwarding\n";
     }
-    else outputFile<<"Without Data Forwarding";
+    else outputFile<<"Without Data Forwarding\n";
     x=c1_in/float(c1_cycles);
     outputFile<<"Num_Stalls in core 2 : "<< c1_stall << endl;
     outputFile<<"Num_clock_Cycles in core 2 : "<< c1_cycles << endl;
@@ -660,8 +660,8 @@ int main()
     processor sim;
 
     // Load programs into memory
-    sim.load_Program("a.txt", 0);
-    sim.load_Program("b.txt", 2048);
+    sim.load_Program("test1.txt", 0);
+    sim.load_Program("test2.txt", 2048);
 
     // load data into memory like arrays and strings
     sim.load_data(sim.memory, 0);
