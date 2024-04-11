@@ -1,0 +1,8 @@
+.data 
+array: .word 1 2 3 4
+
+.text
+la x2 array
+lw x1 0(x2)
+addi x3 x0 99
+addi x4 x3 1

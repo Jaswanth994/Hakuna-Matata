@@ -1,0 +1,17 @@
+Memory Index--->0    ----> .data 
+Memory Index--->1    ----> array: .word 1 2 3 4
+Memory Index--->2    ----> .text
+Memory Index--->3    ----> la x2 array
+Memory Index--->4    ----> lw x1 0(x2)
+Memory Index--->5    ----> addi x3 x0 99
+Memory Index--->6    ----> addi x4 x3 1
+Memory Index--->1001    ----> array:
+Memory Index--->1002    ----> 1
+Memory Index--->1003    ----> 2
+Memory Index--->1004    ----> 3
+Memory Index--->1005    ----> 4
+Memory Index--->2048    ----> addi x2 x3 666
+Memory Index--->2049    ----> addi x1 x0 88
+Memory Index--->2050    ----> addi x4 x1 77
+Memory Index--->2051    ----> add x5 x1 x4
+Memory Index--->2052    ----> sub x6 x5 x2 

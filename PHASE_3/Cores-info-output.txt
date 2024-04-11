@@ -1,0 +1,19 @@
+----------------CORE-1---------------
+With Data Forwarding
+Num_Stalls in core 1 : 2
+Num_clock_Cycles in core 1 : 9
+Num_Instructions in core 1 : 5
+Instruction per cycle core 1: 0.555556
+-------------------------------------
+
+----------------CORE-2---------------
+With Data Forwarding
+Num_Stalls in core 2 : 0
+Num_clock_Cycles in core 2 : 9
+Num_Instructions in core 2 : 5
+Instruction per cycle core 2: 0.555556
+-------------------------------------
+
+----------------------------------
+Hit rate: 1
+Miss rate: 9
