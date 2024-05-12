@@ -10,17 +10,16 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 class cache
 {
 private:
-    int cachesize;
-    int blocksize;
-    int numblocks;
-    int associativity;
+    int cachesize;     // Cache size
+    int blocksize;     // Block size
+    int numblocks;     // Number of blocks in cache
+    int associativity; // Number of blocks per set
 
-    vector<list<int>> v;
-    vector<unordered_map<int, list<int>::iterator>> m;
+    vector<list<int>> v;                               // Vector of list helps to track the order of block access and each list says about a set in cache
+    vector<unordered_map<int, list<int>::iterator>> m; // Each map says about set in a cache
     pair<int, int> split(int address)
     {
         int offset = (int)log2(numblocks);
@@ -54,8 +53,9 @@ public:
         auto a = split(address);
         tag = a.first;
         index = a.second;
+        // if tag is not present in cache
         if (m[index].find(tag) == m[index].end())
-        {
+        { // if set is full and will deletes the least recently used tag
             if (v[index].size() == associativity)
             {
                 int back = v[index].back();
@@ -65,7 +65,7 @@ public:
             z = false;
         }
         else
-        {
+        { // if present to delete in the list
             v[index].erase(m[index][tag]);
             z = true;
         }
@@ -74,7 +74,7 @@ public:
         return z;
     }
 
-   bool mruaccess(int address)
+    bool mruaccess(int address)
     {
         bool z;
         int tag, index;
@@ -138,8 +138,8 @@ public:
     int num_data_hazards;
     int num_control_hazards;
     int num_WB;
-    int i1,i2,i3,i4,i5;
-    bool b1, b2, b3, b4; 
+    int i1, i2, i3, i4, i5;
+    bool b1, b2, b3, b4;
     // Constructor to initialize registers and program counter
     core()
     {
@@ -148,16 +148,16 @@ public:
             registers[i] = 0;
         }
         pc = 0;
-        num_Instructions=0;
+        num_Instructions = 0;
         forwarding = false;
         num_stalls = 0;
-        num_Clock_Cycles=0;
+        num_Clock_Cycles = 0;
         num_data_hazards = 0;
         num_control_hazards = 0;
-        num_WB=0;
+        num_WB = 0;
         b1 = b2 = b3 = b4 = false;
         temp_stall = 0;
-        i1=i2=i3=i4=i5=0;
+        i1 = i2 = i3 = i4 = i5 = 0;
     }
     Buffer Buffers[100];
 };
@@ -168,7 +168,7 @@ public:
     int clock;           // Clock cycles
 
     core cores[2] = {core(), core()}; // Two cores in the processor
-    cache c = cache(64,16,1);
+    cache c = cache(64, 16, 1);
     // Constructor to initialize memory and clock cycles
     processor()
     {
@@ -189,9 +189,9 @@ class pipe_line_control
 public:
     void Write_Back(core &core, string memory[])
     {
-        if (core.b4 )
+        if (core.b4)
         {
-           // std::cout << "wb  ";
+            // std::cout << "wb  ";
             string opcode = core.Buffers[core.i5].opcode;
             if (opcode == "add")
             {
@@ -218,7 +218,7 @@ public:
                 if (core.Buffers[core.i5].branch_proceed)
                 {
                     core.pc = core.label_addr[core.Buffers[core.i5].label];
-                   // core.Buffers[core.i2]=core.Buffers[core.pc];
+                    // core.Buffers[core.i2]=core.Buffers[core.pc];
                 }
             }
             core.num_WB++;
@@ -229,28 +229,32 @@ public:
     {
         if (core.b3)
         {
-           // std::cout << "mem  ";
+            // std::cout << "mem  ";
             core.b4 = true;
             string opcode = core.Buffers[core.i4].opcode;
             if (opcode == "lw")
-            {   if(isdigit(memory[core.Buffers[core.i4].result_mem][0]))
-                core.Buffers[core.i4].result_mem = stoi(memory[core.Buffers[core.i4].result_mem]);
-                else core.Buffers[core.i4].result_mem=0;  }
+            {
+                if (isdigit(memory[core.Buffers[core.i4].result_mem][0]))
+                    core.Buffers[core.i4].result_mem = stoi(memory[core.Buffers[core.i4].result_mem]);
+                else
+                    core.Buffers[core.i4].result_mem = 0;
+            }
             if (opcode == "sw")
             {
                 core.Buffers[core.i4].result_mem = core.registers[core.Buffers[core.i4].rd];
             }
             core.i4++;
         }
-        else{
-            core.b4=false;
+        else
+        {
+            core.b4 = false;
         }
     }
     void Execution(core &core)
     {
         if (core.b2)
         {
-           // std::cout << "exe  ";
+            // std::cout << "exe  ";
             core.b3 = true;
             string opcode = core.Buffers[core.i3].opcode;
             if (opcode == "add")
@@ -263,7 +267,7 @@ public:
             }
             else if (opcode == "addi")
             {
-                //cout<<core.registers[core.Buffers[core.i3].rs1]<<" kkkkkkkk"<<endl;
+                // cout<<core.registers[core.Buffers[core.i3].rs1]<<" kkkkkkkk"<<endl;
                 core.Buffers[core.i3].result_exe = core.registers[core.Buffers[core.i3].rs1] + core.Buffers[core.i3].value;
             }
             else if (opcode == "lw")
@@ -298,7 +302,6 @@ public:
             else if (opcode == "j")
             {
                 core.pc = core.label_addr[core.Buffers[core.i3].label];
-                
             }
             else if (opcode == "jal")
             {
@@ -316,144 +319,143 @@ public:
             }
             core.i3++;
         }
-        else{
-            core.b3=false;
+        else
+        {
+            core.b3 = false;
         }
     }
 
     void Ins_decode(core &core)
     {
-        //std::cout<<core.b2<<"frarae"<<core.x<<endl;
+        // std::cout<<core.b2<<"frarae"<<core.x<<endl;
         if (core.temp_stall != 0)
         {
             core.temp_stall--;
-           /// std::cout<<core.temp_stall<<" ................ "<<core.b1<<endl;
-            if(core.b1==false && core.temp_stall==0)
-               {
-                    core.b1=true;
-                   
-               } 
-            core.b2=false;
+            /// std::cout<<core.temp_stall<<" ................ "<<core.b1<<endl;
+            if (core.b1 == false && core.temp_stall == 0)
+            {
+                core.b1 = true;
+            }
+            core.b2 = false;
         }
-       
+
         if (core.b1 && core.temp_stall == 0)
         {
-           // std::cout << "id  " ;
+            // std::cout << "id  " ;
             core.b2 = true;
             string Instruction = core.Buffers[core.i2].Instruction;
             string word;
-            if(Instruction!=""){
-            stringstream ss(Instruction);
-            queue<string> tokens;
-            while (ss >> word)
+            if (Instruction != "")
             {
-                tokens.push(word);
-            }
-            string opcode = tokens.front();
-            core.Buffers[core.i2].opcode = opcode;
-            if (opcode == "add" || opcode == "sub")
-            {
-                tokens.pop();
-                core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].rs2 = stoi(tokens.front().substr(1));
-            }
-            else if (opcode == "addi")
-            {
-                tokens.pop();
-                core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].value = stoi(tokens.front().substr(0));
-            }
-            else if (opcode == "bne" || opcode == "blt" || opcode == "beq")
-            {
-                tokens.pop();
-                core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].rs2 = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].label = tokens.front();
-            }
-            else if (opcode == "j")
-            {
-                tokens.pop();
-              //  cout<<tokens.front()<<" ....... "<<endl;
-                core.Buffers[core.i2].label = tokens.front();
-            }
-            else if (opcode == "jal")
-            {
-                tokens.pop();
-                core.Buffers[core.i2].str = tokens.front();
-                core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].label = tokens.front();
-            }
-            else if (opcode == "la")
-            {
-                tokens.pop();
-                core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].label = tokens.front();
-            }
-            else if (opcode == "li")
-            {
-                tokens.pop();
-                core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
-                tokens.pop();
-                core.Buffers[core.i2].value = stoi(tokens.front().substr(0));
-            }
-            else if (opcode == "lw" || opcode == "sw")
-            {
-                int y;
-                tokens.pop();
-                if (!isdigit(tokens.front()[2]))
+                stringstream ss(Instruction);
+                queue<string> tokens;
+                while (ss >> word)
                 {
-                    core.Buffers[core.i2].rd = int(tokens.front()[1] - '0');
+                    tokens.push(word);
                 }
-                else
-                    core.Buffers[core.i2].rd = int((tokens.front()[1] - '0') * 10 + tokens.front()[2] - '0');
-                tokens.pop();
-                if (isdigit(tokens.front()[0]))
+                string opcode = tokens.front();
+                core.Buffers[core.i2].opcode = opcode;
+                if (opcode == "add" || opcode == "sub")
                 {
-                    int z = 0;
-                    int x = 0;
-                    if (isdigit(tokens.front()[1]))
+                    tokens.pop();
+                    core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].rs2 = stoi(tokens.front().substr(1));
+                }
+                else if (opcode == "addi")
+                {
+                    tokens.pop();
+                    core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].value = stoi(tokens.front().substr(0));
+                }
+                else if (opcode == "bne" || opcode == "blt" || opcode == "beq")
+                {
+                    tokens.pop();
+                    core.Buffers[core.i2].rs1 = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].rs2 = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].label = tokens.front();
+                }
+                else if (opcode == "j")
+                {
+                    tokens.pop();
+                    //  cout<<tokens.front()<<" ....... "<<endl;
+                    core.Buffers[core.i2].label = tokens.front();
+                }
+                else if (opcode == "jal")
+                {
+                    tokens.pop();
+                    core.Buffers[core.i2].str = tokens.front();
+                    core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].label = tokens.front();
+                }
+                else if (opcode == "la")
+                {
+                    tokens.pop();
+                    core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].label = tokens.front();
+                }
+                else if (opcode == "li")
+                {
+                    tokens.pop();
+                    core.Buffers[core.i2].rd = stoi(tokens.front().substr(1));
+                    tokens.pop();
+                    core.Buffers[core.i2].value = stoi(tokens.front().substr(0));
+                }
+                else if (opcode == "lw" || opcode == "sw")
+                {
+                    int y;
+                    tokens.pop();
+                    if (!isdigit(tokens.front()[2]))
                     {
-                        core.Buffers[core.i2].offset = int((tokens.front()[0] - '0') * 10 + (tokens.front()[1] - '0'));
-                        z = 4;
+                        core.Buffers[core.i2].rd = int(tokens.front()[1] - '0');
                     }
                     else
+                        core.Buffers[core.i2].rd = int((tokens.front()[1] - '0') * 10 + tokens.front()[2] - '0');
+                    tokens.pop();
+                    if (isdigit(tokens.front()[0]))
                     {
-                        core.Buffers[core.i2].offset = int(tokens.front()[0] - '0');
-                        z = 3;
+                        int z = 0;
+                        int x = 0;
+                        if (isdigit(tokens.front()[1]))
+                        {
+                            core.Buffers[core.i2].offset = int((tokens.front()[0] - '0') * 10 + (tokens.front()[1] - '0'));
+                            z = 4;
+                        }
+                        else
+                        {
+                            core.Buffers[core.i2].offset = int(tokens.front()[0] - '0');
+                            z = 3;
+                        }
+                        if (isdigit(tokens.front()[z + 1]))
+                        {
+                            core.Buffers[core.i2].rs1 = int((tokens.front()[z] - '0') * 10 + (tokens.front()[z + 1] - '0'));
+                        }
+                        else
+                            core.Buffers[core.i2].rs1 = int((tokens.front()[z] - '0'));
                     }
-                    if (isdigit(tokens.front()[z + 1]))
-                    {
-                        core.Buffers[core.i2].rs1 = int((tokens.front()[z] - '0') * 10 + (tokens.front()[z + 1] - '0'));
-                    }
-                    else
-                        core.Buffers[core.i2].rs1 = int((tokens.front()[z] - '0'));
                 }
+                detect_data_Hazard(core);
+                detect_control_Hazard(core);
+                /// cout<<core.temp_stall<<" NNNNNNNN"<<endl;
+                core.i2++;
             }
-            detect_data_Hazard(core);
-            detect_control_Hazard(core);
-           /// cout<<core.temp_stall<<" NNNNNNNN"<<endl;
-            core.i2++; 
-            }
-            
-            
         }
-        else 
+        else
         {
-            core.b2=false;
+            core.b2 = false;
         }
     }
 
-    void Fetch(core &core, string memory[],cache &cache)
+    void Fetch(core &core, string memory[], cache &cache)
     {
         if (memory[core.pc] != "" && core.temp_stall == 0)
         {
@@ -464,36 +466,37 @@ public:
         stringstream ss(memory[core.pc]);
         string firstword;
         ss >> firstword;
-        if(firstword.back()==':' || firstword.front()=='.'){
+        if (firstword.back() == ':' || firstword.front() == '.')
+        {
             core.b1 = true;
             core.pc++;
         }
 
-      if (memory[core.pc] != "" && core.temp_stall == 0 )
+        if (memory[core.pc] != "" && core.temp_stall == 0)
         {
-           // std::cout << "fetch  " ;
+            // std::cout << "fetch  " ;
             string Instruction = memory[core.pc];
             core.Buffers[core.i1].Instruction = Instruction;
-            cout<<Instruction<<endl;
+            // cout<<Instruction<<endl;
             core.i1++;
             core.b1 = true;
             core.num_Instructions++;
             core.pc++;
         }
-        else{
-            core.b1=false;
+        else
+        {
+            core.b1 = false;
         }
-    
     }
-    void detect_control_Hazard(core &core){
-      if(core.Buffers[core.i2].opcode=="bne" && !core.forwarding){
-                        core.temp_stall=3;
-                       // cout<<"Hiii"<<endl;
-                        core.num_stalls+=core.temp_stall;
-                        core.b2=false;
-                    }
-
-
+    void detect_control_Hazard(core &core)
+    {
+        if (core.Buffers[core.i2].opcode == "bne" && !core.forwarding)
+        {
+            core.temp_stall = 3;
+            // cout<<"Hiii"<<endl;
+            core.num_stalls += core.temp_stall;
+            core.b2 = false;
+        }
     }
 
     void lrurate(int address, cache &cache)
@@ -516,66 +519,75 @@ public:
     }
 
     void detect_data_Hazard(core &core)
-              {
-                int i=core.i2-1;
-                
-                    if(core.Buffers[core.i2].opcode=="la" && !core.forwarding){
-                        core.temp_stall=3;
-                        //cout<<"hi.......... "<<endl;core
-                        core.num_stalls+=core.temp_stall;   
-                    }
-                    else if(core.Buffers[core.i2].opcode=="la" && core.forwarding){
+    {
+        int i = core.i2 - 1;
 
-                        core.temp_stall=1;
-                        core.num_stalls+=core.temp_stall;
-                    }
+        if (core.Buffers[core.i2].opcode == "la" && !core.forwarding)
+        {
+            core.temp_stall = 3;
+            // cout<<"hi.......... "<<endl;core
+            core.num_stalls += core.temp_stall;
+        }
+        else if (core.Buffers[core.i2].opcode == "la" && core.forwarding)
+        {
 
-                   
-                   else if(i>=0 ){
-                    ////cout<<"hi........./////. "<<core.i2<<" "<<i<<endl;
-                    cout<<core.Buffers[core.i2].rs1<<" "<<core.Buffers[core.i2].rs2<<" .."<<core.Buffers[i].rd<<endl;
-                         if(core.Buffers[core.i2].rs1 == core.Buffers[i].rd || core.Buffers[core.i2].rs2== core.Buffers[i].rd){
-            
-                            if(!core.forwarding) {
-                             ///  cout<<"hhhhhhh"<<endl;
-                                core.temp_stall=2;
-                                core.num_stalls+=core.temp_stall;
-                                core.b2=false;
-                            }
-                            else if(core.forwarding && core.Buffers[i].opcode=="lw"){
-                                core.temp_stall=1;
-                                core.num_stalls+=core.temp_stall;
-                            }
-                            else{
-                                if(core.Buffers[core.i2].rs1 == core.Buffers[i].rd){
-                                    core.registers[core.Buffers[core.i2].rs1] = core.Buffers[core.i3-1].result_exe;
-                                }
-                                else if(core.Buffers[core.i2].rs2== core.Buffers[i].rd ){
-                                    core.registers[core.Buffers[core.i2].rs2] = core.Buffers[core.i3-1].result_exe; 
-                                }
-                            }
-                        }
-                        else if(i>0 && (core.Buffers[core.i2].rs1 == core.Buffers[i-1].rd || core.Buffers[core.i2].rs2== core.Buffers[i-1].rd)){
-                            if(!core.forwarding) {
-                            core.temp_stall=1;
-                            core.num_stalls+=core.temp_stall;
-                            core.b2=false;
-                            }
+            core.temp_stall = 1;
+            core.num_stalls += core.temp_stall;
+        }
 
-                            else if(core.Buffers[core.i2].rs1 == core.Buffers[i-1].rd){
-                                core.registers[core.Buffers[core.i2].rs1] = core.Buffers[core.i4-1].result_mem;
-                            }
+        else if (i >= 0)
+        {
+            ////cout<<"hi........./////. "<<core.i2<<" "<<i<<endl;
+            // cout<<core.Buffers[core.i2].rs1<<" "<<core.Buffers[core.i2].rs2<<" .."<<core.Buffers[i].rd<<endl;
+            if (core.Buffers[core.i2].rs1 == core.Buffers[i].rd || core.Buffers[core.i2].rs2 == core.Buffers[i].rd)
+            {
 
-                            else if(core.Buffers[core.i2].rs2== core.Buffers[i-1].rd){
-                                core.registers[core.Buffers[core.i2].rs2] = core.Buffers[core.i4-1].result_mem;
-                            }
-
-                        }
-                   }
+                if (!core.forwarding)
+                {
+                    ///  cout<<"hhhhhhh"<<endl;
+                    core.temp_stall = 2;
+                    core.num_stalls += core.temp_stall;
+                    core.b2 = false;
                 }
+                else if (core.forwarding && core.Buffers[i].opcode == "lw")
+                {
+                    core.temp_stall = 1;
+                    core.num_stalls += core.temp_stall;
+                }
+                else
+                {
+                    if (core.Buffers[core.i2].rs1 == core.Buffers[i].rd)
+                    {
+                        core.registers[core.Buffers[core.i2].rs1] = core.Buffers[core.i3 - 1].result_exe;
+                    }
+                    else if (core.Buffers[core.i2].rs2 == core.Buffers[i].rd)
+                    {
+                        core.registers[core.Buffers[core.i2].rs2] = core.Buffers[core.i3 - 1].result_exe;
+                    }
+                }
+            }
+            else if (i > 0 && (core.Buffers[core.i2].rs1 == core.Buffers[i - 1].rd || core.Buffers[core.i2].rs2 == core.Buffers[i - 1].rd))
+            {
+                if (!core.forwarding)
+                {
+                    core.temp_stall = 1;
+                    core.num_stalls += core.temp_stall;
+                    core.b2 = false;
+                }
+
+                else if (core.Buffers[core.i2].rs1 == core.Buffers[i - 1].rd)
+                {
+                    core.registers[core.Buffers[core.i2].rs1] = core.Buffers[core.i4 - 1].result_mem;
+                }
+
+                else if (core.Buffers[core.i2].rs2 == core.Buffers[i - 1].rd)
+                {
+                    core.registers[core.Buffers[core.i2].rs2] = core.Buffers[core.i4 - 1].result_mem;
+                }
+            }
+        }
+    }
 };
-
-
 
 // Method to load program from file into memory
 void processor::load_Program(string filename, int start_addr)
@@ -678,49 +690,51 @@ void core::labels(int start_addr, string memory[])
 void processor::run()
 {
 
-     std::cout << "IN core 1 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
-     int forwarding;
-     cin >> forwarding;
-     cores[0].forwarding=forwarding;
-     std::cout << "IN core 2 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
-     cin>>forwarding;
-     cores[1].forwarding=forwarding;
- 
+    std::cout << "IN core 1 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
+    int forwarding;
+    cin >> forwarding;
+    cores[0].forwarding = forwarding;
+    std::cout << "IN core 2 \nEnter 1 for data_Forwarding and 0 for NOT_Forwarding : ";
+    cin >> forwarding;
+    cores[1].forwarding = forwarding;
+
     cores[0].labels(0, memory);    // Extract labels and their addresses for core 1
     cores[1].labels(2048, memory); // Extract labels and their addresses for core 2
-    cores[1].pc = 2048; // Set program counter for core 2
+    cores[1].pc = 2048;            // Set program counter for core 2
 
     pipe_line_control pipe_line;
-    int flag1=1,flag2=1;
+    int flag1 = 1, flag2 = 1;
     // Loop to execute instructions until max instructions among both of the cores
-    while (flag1==1 || flag2==1)
+    while (flag1 == 1 || flag2 == 1)
     {
         //  Loop through cores to execute instructions in parallel
-        if(flag1==1){
-            cores[0].num_Clock_Cycles=clock+1;
-            //std::cout<<endl;
-           // std::cout<<"clock "<< clock+1<<" ===================  " << " core " << 0<<endl;
-          // cout<<cores[0].pc<< " kkkkkkkkkkkkk"<<endl;
+        if (flag1 == 1)
+        {
+            cores[0].num_Clock_Cycles = clock + 1;
+            // std::cout<<endl;
+            // std::cout<<"clock "<< clock+1<<" ===================  " << " core " << 0<<endl;
+            // cout<<cores[0].pc<< " kkkkkkkkkkkkk"<<endl;
             pipe_line.Write_Back(cores[0], memory);
             pipe_line.Mem(cores[0], memory);
             pipe_line.Execution(cores[0]);
             pipe_line.Ins_decode(cores[0]);
-            pipe_line.Fetch(cores[0], memory,c);
-            if(cores[0].num_Instructions==cores[0].num_WB)
-                flag1=0;
+            pipe_line.Fetch(cores[0], memory, c);
+            if (cores[0].num_Instructions == cores[0].num_WB)
+                flag1 = 0;
         }
-        if(flag2==1){
-            cores[1].num_Clock_Cycles=clock+1;
-            
+        if (flag2 == 1)
+        {
+            cores[1].num_Clock_Cycles = clock + 1;
+
             pipe_line.Write_Back(cores[1], memory);
             pipe_line.Mem(cores[1], memory);
             pipe_line.Execution(cores[1]);
             pipe_line.Ins_decode(cores[1]);
-            pipe_line.Fetch(cores[1], memory,c);
-            if(cores[1].num_Instructions==cores[1].num_WB)
-                flag2=0;
+            pipe_line.Fetch(cores[1], memory, c);
+            if (cores[1].num_Instructions == cores[1].num_WB)
+                flag2 = 0;
         }
-        //std::cout<<endl;
+        // std::cout<<endl;
         clock++; // Increment clock cycle
     }
 }
@@ -816,8 +830,8 @@ void print1(const string filename, int c0_stall, int c1_stall, int c0_cycles, in
 int main()
 {
     processor sim;
-    cout << sim.c.sets;
-    // Load programs into memory
+    // cout << sim.c.sets;
+    //  Load programs into memory
     sim.load_Program("test1.txt", 0);
     sim.load_Program("test2.txt", 2048);
 

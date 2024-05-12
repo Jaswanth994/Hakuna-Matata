@@ -1,4 +1,5 @@
 Memory Index--->0    ----> addi x1 x2 5
 Memory Index--->1    ----> addi x3 x4 9
+Memory Index--->2    ----> addi x4 x5 7
 Memory Index--->2048    ----> addi x1 x2 3
 Memory Index--->2049    ----> addi x7 x1 10

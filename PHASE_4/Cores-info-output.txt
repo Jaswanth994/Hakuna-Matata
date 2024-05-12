@@ -1,9 +1,9 @@
 ----------------CORE-1---------------
 With Data Forwarding
 Num_Stalls in core 1 : 0
-Num_clock_Cycles in core 1 : 6
-Num_Instructions in core 1 : 2
-Instruction per cycle core 1: 0.333333
+Num_clock_Cycles in core 1 : 7
+Num_Instructions in core 1 : 3
+Instruction per cycle core 1: 0.428571
 -------------------------------------
 
 ----------------CORE-2---------------
@@ -16,6 +16,6 @@ Instruction per cycle core 2: 0.333333
 
 ----------------------------------
 LRU Hit rate: 0
-LRU Miss rate: 4
+LRU Miss rate: 5
 MRU Hit rate: 0
-MRU Miss rate: 4
+MRU Miss rate: 5

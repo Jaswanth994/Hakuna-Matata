@@ -26,7 +26,7 @@ private:
         // address = address >> offset;
         int index = address % sets;
         int tag = address >> ((int)log2(sets));
-        cout << tag << " " << index << " " << offset << " " << sets << endl;
+        //cout << tag << " " << index << " " << offset << " " << sets << endl;
         return {tag, index};
     }
 
@@ -105,12 +105,13 @@ public:
 int main()
 {
     cache c(64, 16, 1);
-    cout << c.mruaccess(0) << endl;
-    cout << c.mruaccess(1) << endl;
-    cout << c.mruaccess(2) << endl;
-    cout << c.mruaccess(3) << endl;
-    cout << c.mruaccess(4) << endl;
-    cout << c.mruaccess(4) << endl;
-    cout << c.mruaccess(5) << endl;
+    cout << c.lruaccess(0) << endl;
+    cout << c.lruaccess(1) << endl;
+    cout << c.lruaccess(2) << endl;
+    cout << c.lruaccess(3) << endl;
+    cout << c.lruaccess(4) << endl;
+    cout << c.lruaccess(4) << endl;
+    cout << c.lruaccess(0) << endl;
+    cout << c.lruaccess(1) << endl;
     cout << "---------------------" << endl;
 }
